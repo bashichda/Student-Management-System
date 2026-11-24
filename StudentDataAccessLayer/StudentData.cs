@@ -53,5 +53,35 @@ namespace StudentDataAccessLayer
 
             return StudentsList;
         }
+        public static List<StudentDTO> GetPassedStudents()
+        {
+            List<StudentDTO> passedStudentsList = new List<StudentDTO>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("SP_GetPassedStudents", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            passedStudentsList.Add(new StudentDTO(
+                                    reader.GetInt32(reader.GetOrdinal("Id")),
+                                    reader.GetString(reader.GetOrdinal("Name")),
+                                    reader.GetInt32(reader.GetOrdinal("Age")),
+                                    reader.GetInt32(reader.GetOrdinal("Grade"))
+                                ));
+                        }
+                    }
+                }
+
+                return passedStudentsList;
+            }
+        }
+
     }
 }
