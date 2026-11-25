@@ -37,7 +37,7 @@ namespace StudentApi.Controllers
 
         }
 
-        [HttpGet("AverageGrade",Name = "GetAverageGrades")]
+        [HttpGet("AverageGrade", Name = "GetAverageGrades")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<double> GetAverageGrades()
@@ -46,5 +46,27 @@ namespace StudentApi.Controllers
             return Ok(avgGrade);
         }
 
+        [HttpGet("{id}",Name = "GetStudentById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<StudentDTO> GetStudentById(int id)
+        {
+            if (id < 1)
+            {
+                return BadRequest($"Not accepted ID {id}");
+            }
+            Student student = Student.Find(id);
+            if (student == null)
+            {
+                return NotFound($"Student with ID {id} not found.");
+            }
+
+            // here we get only the DTO object to send it back:
+            StudentDTO SDTO = student.SDTO;
+
+            // we return the DTO not the student object
+            return Ok(SDTO);
+        }
     }
 }
