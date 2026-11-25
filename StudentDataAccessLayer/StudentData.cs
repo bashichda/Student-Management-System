@@ -107,6 +107,34 @@ namespace StudentDataAccessLayer
 
             return avgGrades;
         }
+        public static StudentDTO GetStudentById(int StudentId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("SP_GetStudentById",connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@StudentId", StudentId);
+                    connection.Open();
 
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new StudentDTO(
+                                    reader.GetInt32(reader.GetOrdinal("Id")),
+                                    reader.GetString(reader.GetOrdinal("Name")),
+                                    reader.GetInt32(reader.GetOrdinal("Age")),
+                                    reader.GetInt32(reader.GetOrdinal("Grade"))
+                                );
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

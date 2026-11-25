@@ -1,4 +1,5 @@
 ﻿using StudentDataAccessLayer;
+using System.Security.Cryptography.X509Certificates;
 
 namespace StudentAPIBusinessLayer
 {
@@ -22,6 +23,7 @@ namespace StudentAPIBusinessLayer
             this.Name = SDTO.Name;
             this.Age = SDTO.Age;
             this.Grade = SDTO.Grade;
+            this.Mode = cMode;
         }
 
         public static List<StudentDTO> GetAllStudents()
@@ -37,6 +39,20 @@ namespace StudentAPIBusinessLayer
         public static double GetAverageGrades()
         {
             return StudentData.GetAverageGrades();
+        }
+
+        public static Student Find(int Id)
+        {
+            StudentDTO SDTO = StudentData.GetStudentById(Id);
+
+            if (SDTO != null)
+            {
+                return new Student(SDTO, enMode.Update);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
