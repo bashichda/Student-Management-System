@@ -33,5 +33,10 @@ namespace StudentAPIBusinessLayer
         {
             return StudentData.GetPassedStudents();
         }
+
+        public static double GetAverageGrades()
+        {
+            return StudentData.GetAverageGrades();
+        }
     }
 }

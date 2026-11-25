@@ -37,5 +37,14 @@ namespace StudentApi.Controllers
 
         }
 
+        [HttpGet("AverageGrade",Name = "GetAverageGrades")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<double> GetAverageGrades()
+        {
+            double avgGrade = Student.GetAverageGrades();
+            return Ok(avgGrade);
+        }
+
     }
 }
