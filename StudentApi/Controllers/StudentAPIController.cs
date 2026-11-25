@@ -68,5 +68,25 @@ namespace StudentApi.Controllers
             // we return the DTO not the student object
             return Ok(SDTO);
         }
+
+        [HttpPost(Name = "AddStudent")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<StudentDTO> AddStudent(StudentDTO newStudentDTO)
+        {
+            if (newStudentDTO == null || string.IsNullOrWhiteSpace(newStudentDTO.Name) || newStudentDTO.Age < 1 ||
+                newStudentDTO.Grade < 0 || newStudentDTO.Grade > 100)
+            {
+                return BadRequest("Not accepted student data");
+            }
+
+            Student student = new Student(new StudentDTO(newStudentDTO.Id,newStudentDTO.Name,newStudentDTO.Age,newStudentDTO.Grade));
+            student.Save();
+
+            newStudentDTO.Id = student.ID;
+            // we return the DTO only not the full object
+            // we dont return ok here,we return createdRoute: this will be status code 201 created.
+            return CreatedAtRoute("GetStudentById", new { id = newStudentDTO.Id }, newStudentDTO);
+        }
     }
 }
