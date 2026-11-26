@@ -88,5 +88,31 @@ namespace StudentApi.Controllers
             // we dont return ok here,we return createdRoute: this will be status code 201 created.
             return CreatedAtRoute("GetStudentById", new { id = newStudentDTO.Id }, newStudentDTO);
         }
+
+        [HttpPut("{id}",Name = "UpdateStudent")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<StudentDTO> UpdateStudent(int id,StudentDTO updatedStudent)
+        {
+            if ( id < 1 || updatedStudent == null || string.IsNullOrWhiteSpace(updatedStudent.Name) || updatedStudent.Age <= 0 || updatedStudent.Grade < 0 || updatedStudent.Grade > 100)
+            {
+                return BadRequest("Not accepted student data;");
+            }
+
+            Student student = Student.Find(id);
+            if (student == null)
+            {
+                return NotFound($"No student with ID {id} found");
+            }
+
+            student.Name = updatedStudent.Name;
+            student.Age = updatedStudent.Age;
+            student.Grade = updatedStudent.Grade;
+            student.Save();
+
+            // we return the DTO not the full student Object:
+            return Ok(student.SDTO);
+        }
     }
 }

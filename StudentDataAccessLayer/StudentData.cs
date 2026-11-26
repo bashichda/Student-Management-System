@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.Tracing;
 using Microsoft.Data.SqlClient;
 
 namespace StudentDataAccessLayer
@@ -156,6 +157,31 @@ namespace StudentDataAccessLayer
                 command.ExecuteNonQuery();
                 
                 return (int)outputIdParam.Value;
+            }
+        }
+        public static bool UpdateStudent(StudentDTO studentDTO)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            using (var command = new SqlCommand("SP_UpdateStudent",connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@StudentId", studentDTO.Id);
+                command.Parameters.AddWithValue("@Name", studentDTO.Name);
+                command.Parameters.AddWithValue("@Age", studentDTO.Age);
+                command.Parameters.AddWithValue("@Grade", studentDTO.Grade);
+
+                connection.Open();
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return false;
+                }
             }
         }
     }
