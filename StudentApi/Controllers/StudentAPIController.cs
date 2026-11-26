@@ -80,13 +80,24 @@ namespace StudentApi.Controllers
                 return BadRequest("Not accepted student data");
             }
 
-            Student student = new Student(new StudentDTO(newStudentDTO.Id,newStudentDTO.Name,newStudentDTO.Age,newStudentDTO.Grade));
-            student.Save();
+            if (Student.Find(newStudentDTO.Id) != null)
+            {
+                return BadRequest($"Student with ID {newStudentDTO.Id} already exists");
+            }
 
-            newStudentDTO.Id = student.ID;
-            // we return the DTO only not the full object
-            // we dont return ok here,we return createdRoute: this will be status code 201 created.
-            return CreatedAtRoute("GetStudentById", new { id = newStudentDTO.Id }, newStudentDTO);
+            Student student = new Student(new StudentDTO(newStudentDTO.Id,newStudentDTO.Name,newStudentDTO.Age,newStudentDTO.Grade));
+            if (student.Save())
+            {
+                newStudentDTO.Id = student.ID;
+                // we return the DTO only not the full object
+                // we dont return ok here,we return createdRoute: this will be status code 201 created.
+                return CreatedAtRoute("GetStudentById", new { id = newStudentDTO.Id }, newStudentDTO);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to add student");
+            }
+
         }
 
         [HttpPut("{id}",Name = "UpdateStudent")]
@@ -109,10 +120,16 @@ namespace StudentApi.Controllers
             student.Name = updatedStudent.Name;
             student.Age = updatedStudent.Age;
             student.Grade = updatedStudent.Grade;
-            student.Save();
+            if (student.Save())
+            {
+                // we return the DTO not the full student Object:
+                return Ok(student.SDTO);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update student");
+            }
 
-            // we return the DTO not the full student Object:
-            return Ok(student.SDTO);
         }
     }
 }
