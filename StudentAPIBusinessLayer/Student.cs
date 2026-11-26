@@ -57,6 +57,10 @@ namespace StudentAPIBusinessLayer
 
             return this.ID != -1;
         }
+        private bool _UpdateStudent()
+        {
+            return StudentData.UpdateStudent(SDTO);
+        }
         public bool Save()
         {
             switch (Mode)
@@ -72,7 +76,7 @@ namespace StudentAPIBusinessLayer
                         return false;
                     }
                 case enMode.Update:
-                    return false;
+                    return _UpdateStudent();
             }
 
             return false;
