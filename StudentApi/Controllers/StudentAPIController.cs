@@ -72,6 +72,7 @@ namespace StudentApi.Controllers
         [HttpPost(Name = "AddStudent")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<StudentDTO> AddStudent(StudentDTO newStudentDTO)
         {
             if (newStudentDTO == null || string.IsNullOrWhiteSpace(newStudentDTO.Name) || newStudentDTO.Age < 1 ||
@@ -104,6 +105,7 @@ namespace StudentApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<StudentDTO> UpdateStudent(int id,StudentDTO updatedStudent)
         {
             if ( id < 1 || updatedStudent == null || string.IsNullOrWhiteSpace(updatedStudent.Name) || updatedStudent.Age <= 0 || updatedStudent.Grade < 0 || updatedStudent.Grade > 100)
@@ -130,6 +132,23 @@ namespace StudentApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update student");
             }
 
+        }
+
+        [HttpDelete("{id}",Name = "DeleteStudent")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult DeleteStudent(int id)
+        {
+            if (id < 1)
+            {
+                return BadRequest($"Not accepted ID {id}.");
+            }
+
+            if (Student.DeleteStudent(id))
+                return Ok($"Student with ID {id} has been deleted.");
+            else
+                return NotFound($"Studnet with ID {id} not found. no rows deleted!");
         }
     }
 }
