@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using StudentAPIBusinessLayer;
 using StudentDataAccessLayer;
 
@@ -149,6 +150,36 @@ namespace StudentApi.Controllers
                 return Ok($"Student with ID {id} has been deleted.");
             else
                 return NotFound($"Studnet with ID {id} not found. no rows deleted!");
+        }
+
+        [HttpPost("Upload")]
+        public async Task<ActionResult> UploadImage(IFormFile imageFile)
+        {
+            // Check if no file is uploaded
+            if (imageFile == null || imageFile.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            // Directory where file will be uploaded
+            var uploadDirectory = @"C:\MyUploads";
+
+            // Generate a unique filename
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var filePath = Path.Combine(uploadDirectory, fileName);
+
+            // Ensure the uploads directory exists, create if it doesn't
+            if (!Directory.Exists(uploadDirectory))
+            {
+                Directory.CreateDirectory(uploadDirectory);
+            }
+
+            // Save the file to the server
+            using (var stream = new FileStream(filePath,FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
+            // Return the file path as a response
+            return Ok(new { filePath });
         }
     }
 }
