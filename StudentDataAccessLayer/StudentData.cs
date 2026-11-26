@@ -170,12 +170,34 @@ namespace StudentDataAccessLayer
                 command.Parameters.AddWithValue("@Age", studentDTO.Age);
                 command.Parameters.AddWithValue("@Grade", studentDTO.Grade);
 
-                connection.Open();
 
                 try
                 {
-                    command.ExecuteNonQuery();
-                    return true;
+                    connection.Open();
+                    int rowsAffected = command.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return false;
+                }
+            }
+        }
+        public static bool DeleteStudent(int StudentId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            using (var command = new SqlCommand("SP_DeleteStudent",connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@StudentId", StudentId);
+
+
+                try
+                {
+                    connection.Open();
+                    int rowsAffected = (int)command.ExecuteScalar();
+                    return (rowsAffected == 1);
                 }
                 catch (Exception ex)
                 {
